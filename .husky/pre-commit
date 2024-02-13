@@ -1,1 +1,2 @@
-npm test
+# Lint the code
+npx lint-staged
