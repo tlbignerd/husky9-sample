@@ -1,2 +1,39 @@
-# Lint the code
-npx lint-staged
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+
+# Require the branch name follows the GitFlow standard (`feature/`, `hotfix/`, `release/`)
+
+BRANCH_PREFIXES="feature|release|hotfix"
+
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+GITFLOW_REGEX="^($BRANCH_PREFIXES)\/[a-zA-Z0-9._-]+$"
+JIRA_ID_REGEX="\/[A-Z]{2,5}-[0-9]{1,5}"
+
+INVALID_GITFLOW_MESSAGE="Your branch does not follow the GITFLOW_REGEX pattern to meet the GitFlow naming requirements (ex. hotfix/)."
+INVALID_JIRA_ID_MESSAGE="Your branch does not follow the JIRA_ID_REGEX pattern to include a Jira ID after the GitFlow prefix (ex. feature/BSVE-1234)."
+MESSAGE="Your commit will be rejected. You should rename your branch to a valid name and try again."
+
+BRANCH_INVALID=0
+
+# Ensure BRANCH_NAME is not empty and is not in a detached HEAD state (i.e. rebase).
+if [ ! -z "$BRANCH_NAME" ] && [ "$BRANCH_NAME" != "HEAD" ]; then
+
+  if [[ ! $BRANCH_NAME =~ $GITFLOW_REGEX ]]; then
+    BRANCH_INVALID=1
+    echo $INVALID_GITFLOW_MESSAGE
+    echo "GITFLOW_REGEX: $GITFLOW_REGEX"
+  fi
+
+  if [[ ! $BRANCH_NAME =~ $JIRA_ID_REGEX ]]; then
+    BRANCH_INVALID=1
+    echo $INVALID_JIRA_ID_MESSAGE
+    echo "JIRA_ID_REGEX: $JIRA_ID_REGEX"
+  fi
+
+  if [[ $BRANCH_INVALID == 1 ]]; then
+    echo
+    echo "$MESSAGE"
+    exit 1
+  fi
+fi

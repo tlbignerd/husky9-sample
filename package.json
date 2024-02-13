@@ -5,19 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "node index.js",
-    "lint": "npx @biomejs/biome check --apply ./",
     "prepare": "husky"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/biome": "^1.5.3",
-    "husky": "^9.0.10",
-    "lint-staged": "^15.2.2"
-  },
-  "lint-staged": {
-    "**/*.ts": [
-      "npx @biomejs/biome check --apply ./src"
-    ]
+    "husky": "^9.0.10"
   }
 }
